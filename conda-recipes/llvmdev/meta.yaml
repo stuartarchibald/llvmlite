@@ -16,7 +16,7 @@ source:
     #- ../llvm-elf-relocation.patch
     # http://lists.llvm.org/pipermail/llvm-dev/2016-January/094520.html
     - ../llvm-lto-static.patch   # [win]
-
+    - ../0001-Transforms-Add-missing-header-for-InstructionCombini.patch
 
 build:
   number: {{ build_number }}
