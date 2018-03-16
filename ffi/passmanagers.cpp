@@ -21,37 +21,40 @@ using namespace llvm;
  * The default diagnostic handler prints some remarks unconditionally,
  * see http://lists.llvm.org/pipermail/llvm-dev/2016-July/102252.html
  */
-typedef std::tuple<LLVMContext::DiagnosticHandlerTy, void *> diag_handler_t;
+// typedef std::tuple<std::unique_ptr<llvm::DiagnosticHandler>, void *> diag_handler_t;
 
-static diag_handler_t
-SetOptimizationDiagnosticHandler(LLVMContext &Ctx)
-{
-    auto diagnose = [] (const DiagnosticInfo &DI, void *c) {
-        // If an error, print the message and bail out (as the default
-        // handler does).
-        DiagnosticSeverity DS = DI.getSeverity();
-        if (DS == DS_Error) {
-            raw_ostream &out = errs();
-            DiagnosticPrinterRawOStream DP(out);
-            out << "LLVM error: ";
-            DI.print(DP);
-            out << "\n";
-            exit(1);
-        }
-    };
-    /* Save the current diagnostic handler and set our own */
-    diag_handler_t OldHandler(Ctx.getDiagnosticHandler(),
-                              Ctx.getDiagnosticContext());
-    Ctx.setDiagnosticHandler((LLVMContext::DiagnosticHandlerTy) diagnose,
-                             nullptr);
-    return OldHandler;
-}
+// static std::unique_ptr<llvm::DiagnosticHandler>
+// SetOptimizationDiagnosticHandler(LLVMContext &Ctx)
+// {
+//     auto diagnose = [] (const DiagnosticInfo &DI, void *c) {
+//         // If an error, print the message and bail out (as the default
+//         // handler does).
+//         DiagnosticSeverity DS = DI.getSeverity();
+//         if (DS == DS_Error) {
+//             raw_ostream &out = errs();
+//             DiagnosticPrinterRawOStream DP(out);
+//             out << "LLVM error: ";
+//             DI.print(DP);
+//             out << "\n";
+//             exit(1);
+//         }
+//     };
+//     /* Save the current diagnostic handler and set our own */
+// //     diag_handler_t OldHandler(Ctx.getDiagnosticHandler(),
+// //                               Ctx.getDiagnosticContext());
+// //     auto OldHandler = Ctx.getDiagnosticHandler();
+// //     (DiagnosticHandler::DiagnosticHandlerTy)
+//     auto OldHandler = Ctx.getDiagnosticHandler();
+//     Ctx.setDiagnosticHandler(llvm::make_unique(diagnose), false);
+// //     std::unique_ptr<llvm::DiagnosticHandler> OldHandler;
+//     return OldHandler;
+// }
 
-static void
-UnsetOptimizationDiagnosticHandler(LLVMContext &Ctx, diag_handler_t OldHandler)
-{
-    Ctx.setDiagnosticHandler(std::get<0>(OldHandler), std::get<1>(OldHandler));
-}
+// static void
+// UnsetOptimizationDiagnosticHandler(LLVMContext &Ctx, diag_handler_t OldHandler)
+// {
+//     Ctx.setDiagnosticHandler(std::get<0>(OldHandler), std::get<1>(OldHandler));
+// }
 
 
 /*
@@ -83,12 +86,12 @@ LLVMPY_RunPassManager(LLVMPassManagerRef PM,
                       LLVMModuleRef M)
 {
     /* Save the current diagnostic handler and set our own */
-    LLVMContext &Ctx = unwrap(M)->getContext();
-    auto OldHandler = SetOptimizationDiagnosticHandler(Ctx);
+//     LLVMContext &Ctx = unwrap(M)->getContext();
+//     auto OldHandler = SetOptimizationDiagnosticHandler(Ctx);
 
     int r = LLVMRunPassManager(PM, M);
 
-    UnsetOptimizationDiagnosticHandler(Ctx, OldHandler);
+//     UnsetOptimizationDiagnosticHandler(Ctx, OldHandler);
     return r;
 }
 
@@ -97,12 +100,12 @@ LLVMPY_RunFunctionPassManager(LLVMPassManagerRef PM,
                               LLVMValueRef F)
 {
     /* Save the current diagnostic handler and set our own */
-    LLVMContext &Ctx = unwrap(F)->getContext();
-    auto OldHandler = SetOptimizationDiagnosticHandler(Ctx);
+//     LLVMContext &Ctx = unwrap(F)->getContext();
+//     auto OldHandler = SetOptimizationDiagnosticHandler(Ctx);
 
     int r = LLVMRunFunctionPassManager(PM, F);
 
-    UnsetOptimizationDiagnosticHandler(Ctx, OldHandler);
+//     UnsetOptimizationDiagnosticHandler(Ctx, OldHandler);
     return r;
 }
 
